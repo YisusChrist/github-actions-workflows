@@ -5,7 +5,6 @@ on:
     inputs:
       python-version:
         description: "Python version to use for the build"
-        required: true
         type: string
         default: "3.10"
 
