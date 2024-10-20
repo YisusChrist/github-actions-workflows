@@ -23,14 +23,17 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
+      - name: Download centralized constraints file
+        run: curl -o constraints.txt https://raw.githubusercontent.com/YisusChrist/github-actions-workflows/main/.github/workflows/constraints.txt
+
       - name: Upgrade pip
         run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
+          pip install --constraint=constraints.txt pip
           pip --version
 
       - name: Install Poetry
         run: |
-          pip install --constraint=.github/workflows/constraints.txt poetry
+          pip install --constraint=constraints.txt poetry
           poetry --version
 
       - name: Check if there is a parent commit
@@ -47,7 +50,7 @@ jobs:
             bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
 
       - name: Bump version for developmental release
-        if: '! steps.check-version.outputs.tag'
+        if: "! steps.check-version.outputs.tag"
         run: |
           poetry version patch &&
           version=$(poetry version | awk '{ print $2 }') &&
@@ -65,7 +68,7 @@ jobs:
           password: ${{ secrets.PYPI_TOKEN }}
 
       - name: Publish package on TestPyPI
-        if: '! steps.check-version.outputs.tag'
+        if: "! steps.check-version.outputs.tag"
         uses: pypa/gh-action-pypi-publish@v1.10.3
         with:
           user: __token__
